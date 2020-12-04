@@ -2,12 +2,9 @@
 Trbaggを使用するために若干のソースコードを改良
 
 
+<br><br><br><br><br><br>
 
--------------------<br>
-もとのREADME.md<br>
--------------------<br>
-
-
+# 元のREADME.md
 
 
 # Transfer Learning Algorithm Library
