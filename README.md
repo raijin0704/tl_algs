@@ -1,3 +1,15 @@
+# このレポジトリについて
+Trbaggを使用するために若干のソースコードを改良
+
+
+
+-------------------<br>
+もとのREADME.md<br>
+-------------------<br>
+
+
+
+
 # Transfer Learning Algorithm Library
 
 [Wikipedia](https://en.wikipedia.org/wiki/Inductive_transfer) defines transfer learning as "a research problem in machine learning that focuses on storing knowledge gained while solving one problem and applying it to a different but related problem." Basically, this just means training using two or more domains and attempting to extend the predictions of these *source* domains to a new, previously unseen, *target* domain. This library serves as an implementation of several transfer learning algorithms.
