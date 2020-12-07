@@ -5,14 +5,14 @@ from tl_algs import tl_alg
 from tl_algs import voter
 # from vuln_toolkit.common import vuln_metrics
 from sklearn.dummy import DummyClassifier
-from sklearn.metrics import f1_score 
+from sklearn.metrics import f1_score, mean_squared_error
 
 
 
 
 # ----------------Filters----------------
 
-def no_filter(f_0, F, X_target, y_target):
+def no_filter(f_0, F, X_target, y_target, metric=None):
     """Apply no filter to the data, just merge F and F_0 and return
 
     Args:
@@ -20,6 +20,7 @@ def no_filter(f_0, F, X_target, y_target):
       F: set of possible learners
       X_target: target training instances
       y_target: target training labels
+      metric: unuse params
 
     Returns:
       list: F with f_0 added to it
@@ -29,7 +30,7 @@ def no_filter(f_0, F, X_target, y_target):
     return F
 
 
-def all_filter(f_0, F, X_target, y_target):
+def all_filter(f_0, F, X_target, y_target, metric=None):
     """Filter all other learners except the basline
 
     Args:
@@ -37,6 +38,7 @@ def all_filter(f_0, F, X_target, y_target):
       F: set of possible learners
       X_target: target training instances
       y_target: target training labels
+      metric: unuse params
 
     Returns:
       list: An array just containing f_0
@@ -82,7 +84,7 @@ def mvv_filter(
         F,
         X_target,
         y_target,
-        raw_metric=f1_score,
+        metric=f1_score,
         vote_func=voter.mean_confidence_vote):
     """Majority Voting on the Validation Set (see
     https://doi.org/10.1109/ICDM.2009.9 for details)
@@ -96,7 +98,7 @@ def mvv_filter(
       F: set of possible learners
       X_target: target training instances
       y_target: target training labels
-      raw metric: a function of the form f(y_true, y_pred) -> real number
+      metric: a function of the form f(y_true, y_pred) -> real number
     (Default value = sklearn.metrics.f1_score)
       vote_func: a function of the form f(F_star, test_set_X) -> (confidences,
     predictions) (Default value = mean_confidence_vote)
@@ -106,10 +108,10 @@ def mvv_filter(
 
     """
     fallback_predicted = f_0.predict(X_target)
-    fallback_performance = raw_metric(y_target, fallback_predicted)
+    fallback_performance = metric(y_target, fallback_predicted)
     F_star = [f_0]
     # sort by descending metric scores (assume higher metric scores are better)
-    F_scores = [raw_metric(y_target, f.predict(X_target)) for f in F]
+    F_scores = [metric(y_target, f.predict(X_target)) for f in F]
     # zip so we have [(classifier, score), ...]
     F_merged = zip(F, F_scores)
     F_merged_sorted = sorted(F_merged, key=lambda x: x[1], reverse=True)
@@ -122,7 +124,7 @@ def mvv_filter(
         # vote among F_candidate learners
         confidence, predictions = vote_func(F_candidate, X_target)
         # get performance of new candidate set
-        candidate_performance = raw_metric(y_target, predictions)
+        candidate_performance = metric(y_target, predictions)
         # only select candidate set if its performance is better than the
         # fallback classifier alone
         if candidate_performance > fallback_performance:
@@ -164,7 +166,7 @@ class TrBag(tl_alg.Base_Transfer):
     def __init__(self, test_set_X, test_set_domain, train_pool_X,
                  train_pool_y, train_pool_domain,
                  Base_Classifier, sample_size, rand_seed=None, classifier_params={},
-                 T=25, filter_func=sc_trbag_filter,
+                 T=25, filter_func=sc_trbag_filter, filter_metric=f1_score,
                  vote_func=voter.count_vote, validate_proportion=None):
         
         # this should be passing all the base parameters to the superclass
@@ -183,6 +185,7 @@ class TrBag(tl_alg.Base_Transfer):
         self.T = T
         self.sample_size = sample_size 
         self.filter_func = filter_func
+        self.filter_metric = filter_metric
         self.vote_func = vote_func
 
         self.validate_proportion = validate_proportion
@@ -385,7 +388,7 @@ class TrBag(tl_alg.Base_Transfer):
                                                            y_target_train.tolist())
 
         # filter
-        F_star = filter_func(f_0, F, X_validate, y_validate)
+        F_star = filter_func(f_0, F, X_validate, y_validate, metric=self.filter_metric)
 
         # return count_vote(F_star, test_set_X)
         return vote_func(F_star, test_set_X)
