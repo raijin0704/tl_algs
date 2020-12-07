@@ -8,6 +8,8 @@ from sklearn.dummy import DummyClassifier
 from sklearn.metrics import f1_score, mean_squared_error
 
 
+# list of metrics which prefer to small values.
+REVERCE_METRICS = [mean_squared_error]
 
 
 # ----------------Filters----------------
@@ -64,6 +66,8 @@ def sc_trbag_filter(f_0, F, X_target, y_target, metric=f1_score):
 
     """
     fallback_performance = metric(y_target, f_0.predict(X_target))
+    if metric in REVERCE_METRICS:
+      fallback_performance *= -1
     F_star = [f_0]
     # print(fallback_performance)
     for f in F:
