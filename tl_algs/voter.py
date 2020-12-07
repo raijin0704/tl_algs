@@ -65,3 +65,31 @@ def mean_confidence_vote(clf_list, test_set_X, threshold_prop=0.5):
     # predict vulnerability
     return (mean_confidence, predictions)
 
+
+def count_vote_regression(clf_list, test_set_X, threshold_prop=0.5):
+    """Takes the list of selected weak classifiers and return
+    (confidence,prediction)
+    threshold: proportion of functions which must predict yes for the label
+    output to be yes
+
+    Args:
+      clf_list: set of classifiers to vote
+      test_set_X: Test set training instances
+      threshold_prop: Proportion of votes required to assign positive label
+    (Default value = 0.5)
+
+    Returns:
+      tuple: Tuple of the form (confidences, predictions)
+
+    """
+    pred_list = []
+    for f in clf_list:
+        y_pred = f.predict(test_set_X)
+        pred_list.append(y_pred.tolist())
+    # votes = zip(*pred_list)
+
+    # confidence = num votes / total
+    # confidence_arr = np.mean(votes, 1)
+    prediction = np.median(pred_list, 0)
+    
+    return prediction
