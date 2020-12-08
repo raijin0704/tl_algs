@@ -92,4 +92,4 @@ def count_vote_regression(clf_list, test_set_X, threshold_prop=0.5):
     # confidence_arr = np.mean(votes, 1)
     prediction = np.median(pred_list, 0)
     
-    return prediction
+    return (prediction, prediction)
