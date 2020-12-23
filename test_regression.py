@@ -6,7 +6,7 @@ import random
 
 from sklearn.metrics import mean_squared_error
 
-from tl_algs import trbag
+from tl_algs import trbag, voter
 
 RAND_SEED = 2016 
 random.seed(RAND_SEED) # change this to see new random data!
@@ -48,6 +48,8 @@ model = trbag.TrBag(test_set_X=test_set_X,
             sample_size=test_set_y.shape[0],
             Base_Classifier=RandomForestRegressor,
             filter_metric=mean_squared_error,
+            filter_func=trbag.mvv_filter,
+            vote_func=voter.mean_confidence_vote_regression,
             rand_seed=RAND_SEED
         )
 

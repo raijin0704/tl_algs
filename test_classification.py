@@ -4,7 +4,7 @@ from sklearn.datasets import make_blobs
 from sklearn.ensemble import RandomForestClassifier
 import random
 
-from tl_algs import trbag
+from tl_algs import trbag, voter
 
 RAND_SEED = 2016 
 random.seed(RAND_SEED) # change this to see new random data!
@@ -45,6 +45,8 @@ model = trbag.TrBag(test_set_X=test_set_X,
             train_pool_domain=train_pool_domain, 
             sample_size=test_set_y.shape[0],
             Base_Classifier=RandomForestClassifier,
+            filter_func=trbag.mvv_filter,
+            vote_func=voter.mean_confidence_vote,
             rand_seed=RAND_SEED
         )
 

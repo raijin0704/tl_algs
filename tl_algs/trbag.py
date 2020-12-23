@@ -14,7 +14,7 @@ REVERCE_METRICS = [mean_squared_error]
 
 # ----------------Filters----------------
 
-def no_filter(f_0, F, X_target, y_target, metric=None):
+def no_filter(f_0, F, X_target, y_target, metric=None, vote_func=None):
     """Apply no filter to the data, just merge F and F_0 and return
 
     Args:
@@ -32,7 +32,7 @@ def no_filter(f_0, F, X_target, y_target, metric=None):
     return F
 
 
-def all_filter(f_0, F, X_target, y_target, metric=None):
+def all_filter(f_0, F, X_target, y_target, metric=None, vote_func=None):
     """Filter all other learners except the basline
 
     Args:
@@ -49,7 +49,7 @@ def all_filter(f_0, F, X_target, y_target, metric=None):
     return [f_0]
 
 
-def sc_trbag_filter(f_0, F, X_target, y_target, metric=f1_score):
+def sc_trbag_filter(f_0, F, X_target, y_target, metric=f1_score, vote_func=None):
     """filter based on SC method and return F_star (filtered weak classifiers)
     f_0: baseline
 
@@ -392,7 +392,8 @@ class TrBag(tl_alg.Base_Transfer):
                                                            y_target_train.tolist())
 
         # filter
-        F_star = filter_func(f_0, F, X_validate, y_validate, metric=self.filter_metric)
+        F_star = filter_func(f_0, F, X_validate, y_validate, 
+                             metric=self.filter_metric, vote_func=self.vote_func)
 
         # return count_vote(F_star, test_set_X)
         return vote_func(F_star, test_set_X)
