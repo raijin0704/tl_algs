@@ -49,6 +49,7 @@ model = trbag.TrBag(test_set_X=test_set_X,
             Base_Classifier=RandomForestRegressor,
             filter_metric=mean_squared_error,
             filter_func=trbag.mvv_filter,
+            validate_proportion=0.5,
             vote_func=voter.mean_confidence_vote_regression,
             rand_seed=RAND_SEED
         )

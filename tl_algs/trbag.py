@@ -248,14 +248,14 @@ class TrBag(tl_alg.Base_Transfer):
             # Remove validation set from target training set
             # we are able to use iloc (position based indexing) because we
             # reset the index above
-            X_target_train = X_target.ix[
+            X_target_train = X_target.loc[
                 X_target.index.difference(
                     X_validate.index), ]
             y_target_train = y_target[X_target_train.index]
             # print("Train size", str(X_target_train.shape[0]))
             assert X_target_train.shape[0] == len(y_target_train)
             # Remove validation from train pool
-            train_pool_X = train_pool_X.ix[
+            train_pool_X = train_pool_X.loc[
                 train_pool_X.index.difference(
                     X_validate.index), ]
             train_pool_y = train_pool_y[train_pool_X.index]
